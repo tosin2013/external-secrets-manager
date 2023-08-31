@@ -3,6 +3,9 @@
   hosts: localhost  # You can modify this to target specific hosts
 
   tasks:
+    - name: Login to OpenShift
+      shell: oc login --token={{ openshift_token }} --server={{ openshift_url }}:6443
+
     - name: Wait for pods to be running
       shell: oc get pods -n vault --no-headers | grep Running | wc -l
       register: pod_count

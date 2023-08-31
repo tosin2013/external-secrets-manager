@@ -1,3 +1,6 @@
+openshift_token: 12345678
+openshift_url: https://api.ocp4.example.com:6443
+
 values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
 kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
 kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"
