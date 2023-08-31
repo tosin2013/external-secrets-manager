@@ -4,4 +4,5 @@
   connection: local
   gather_facts: false
   roles:
+   - configure_infra
    - vault_utils

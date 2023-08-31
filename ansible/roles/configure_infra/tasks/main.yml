@@ -1,0 +1,9 @@
+---
+# tasks file for configure-infra
+- name: Configure offline token 
+  import_tasks: openshift-login.yaml
+  tags: always 
+
+- name: Initialize and Unseal HashiCorp Vault
+  import_tasks: vault-init.yaml
+  tags: vault_init 
