@@ -2,3 +2,9 @@
 # defaults file for configure-infra
 openshift_token: 12345678
 openshift_url: https://api.ocp4.example.com:6443
+insecure_skip_tls_verify: true
+
+# Vault vaules
+localClusterDomain: apps.foo.cluster.com
+## using "registry.connect.redhat.com/hashicorp/vault"
+image_tag: 1.14.0-ubi

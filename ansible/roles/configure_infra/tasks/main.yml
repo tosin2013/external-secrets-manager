@@ -4,6 +4,10 @@
   import_tasks: openshift-login.yaml
   tags: always 
 
+- name: Install  HashiCorp Vault helm
+  import_tasks: deploy-vault.yml
+  tags: install_vault 
+
 - name: Initialize and Unseal HashiCorp Vault
   import_tasks: vault-init.yaml
   tags: vault_init 
