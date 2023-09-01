@@ -6,10 +6,10 @@
 
 - name: Install  HashiCorp Vault helm
   import_tasks: deploy-vault.yml
-  tags: install_vault 
+  tags: 
+   - install_vault 
+   - delete_vault
 
 - name: Initialize and Unseal HashiCorp Vault
   import_tasks: vault-init.yaml
-  tags:
-    - vault_init 
-    - delete_vault
+  tags: vault_init
