@@ -4,3 +4,4 @@ collections:
   - containers.podman
   - community.general
   - kubernetes.core
+  - community.kubernetes

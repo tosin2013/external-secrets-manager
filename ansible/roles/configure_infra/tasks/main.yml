@@ -10,4 +10,6 @@
 
 - name: Initialize and Unseal HashiCorp Vault
   import_tasks: vault-init.yaml
-  tags: vault_init 
+  tags:
+    - vault_init 
+    - delete_vault
