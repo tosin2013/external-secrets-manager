@@ -3,8 +3,8 @@
   shell: oc get pods -n hashicorp-vault --no-headers | grep Running | wc -l
   register: pod_count
   until: pod_count.stdout|int >= 1
-  retries: 12  # Adjust as needed
-  delay: 10    # Adjust as needed
+  retries: 10  # Adjust as needed
+  delay: 30    # Adjust as needed
   when: install_vault | bool
 
 - name: Initialize Vault
