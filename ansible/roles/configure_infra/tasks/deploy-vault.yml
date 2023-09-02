@@ -39,6 +39,25 @@
     name: golang-external-secrets
   when: install_vault | bool
 
+- name: Add external-secrets Helm repository
+  community.kubernetes.helm_repository:
+    name: external-secrets
+    repo_url: https://external-secrets.github.io/kubernetes-external-secrets/
+    state: present
+  when: install_vault | bool
+
+
+- name: Install Helm chart from external-secrets repository
+  community.kubernetes.helm:
+    name: external-secrets
+    chart_ref: external-secrets
+    chart_repo_url: https://external-secrets.github.io/kubernetes-external-secrets/
+    release_namespace: golang-external-secrets
+    create_namespace: true
+    values: "{{ lookup('template', 'external-secrets-vaules.yaml') | from_yaml }}"
+    state: present
+  when: install_vault | bool
+
 - name: Remove Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
     name: hashicorp-vault
@@ -55,6 +74,17 @@
   community.kubernetes.k8s:
     state: absent
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
+  when: not install_vault | bool
+
+- name: Install Helm chart from external-secrets repository
+  community.kubernetes.helm:
+    name: external-secrets
+    chart_ref: external-secrets
+    chart_repo_url: https://external-secrets.github.io/kubernetes-external-secrets/
+    release_namespace: golang-external-secrets
+    create_namespace: true
+    values: "{{ lookup('template', 'external-secrets-vaules.yaml') | from_yaml }}"
+    state: absent
   when: not install_vault | bool
 
 # wait for vault pod to be deleted
