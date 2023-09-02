@@ -24,10 +24,19 @@
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
   when: install_vault | bool
 
-# sleep for 60 seconds to allow vault pod to be created
-- name: Sleep for 60 seconds to allow vault pod to be created
+# sleep for 25 seconds to allow vault pod to be created
+- name: Sleep for 25 seconds to allow vault pod to be created
   pause:
-    seconds: 60
+    seconds: 25
+  when: install_vault | bool
+
+
+# Create golang-external-secrets namespace 
+- name: Create golang-external-secrets namespace 
+  community.kubernetes.k8s:
+    state: present
+    kind: Namespace
+    name: golang-external-secrets
   when: install_vault | bool
 
 - name: Remove Helm chart from HashiCorp Vault repository
@@ -74,5 +83,14 @@
     state: absent
     kind: Namespace
     name: hashicorp-vault
+  ignore_errors: yes
+  when: not install_vault | bool
+
+  # delete golang-external-secrets namespace
+- name: Delete golang-external-secrets namespace
+  community.kubernetes.k8s:
+    state: absent
+    kind: Namespace
+    name: golang-external-secrets
   ignore_errors: yes
   when: not install_vault | bool

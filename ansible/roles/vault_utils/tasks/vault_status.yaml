@@ -13,11 +13,19 @@
   kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ vault_ns }}"
-    name: "{{ vault_pod }}"
+    name: "hashicorp-vault-0"
   register: vault_pod_rc
   until: vault_pod_rc.resources | length > 0
-  retries: 20
-  delay: 45
+  retries: 3
+  delay: 1
+
+
+# Debug the vault_pod name 
+- name: Debug the vault_pod name
+  ansible.builtin.debug:
+    msg: "hashicorp-vault-0"
+  when: vault_pod_rc.resources | length > 0
+
 
 # This needs retrying because during startup we can just get
 # Failed to execute on pod vault-0 due to : (0)\nReason: Handshake status 500 Internal Server Error
@@ -26,7 +34,7 @@
 - name: Check for the vault status
   kubernetes.core.k8s_exec:
     namespace: "{{ vault_ns }}"
-    pod: "{{ vault_pod }}"
+    pod: "hashicorp-vault-0"
     command: vault status -format=json
   register: vault_status_json
   until: "'rc' in vault_status_json"

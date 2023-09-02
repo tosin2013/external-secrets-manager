@@ -1,20 +1,11 @@
 ---
+- name: Run vault init tasks
+  ansible.builtin.import_tasks: vault_init.yaml
+  tags: vault_init
 
-- name: Vault pre checks
-  ansible.builtin.include_tasks: pre_check.yaml
-  
-
-- name: Vault status check
-  ansible.builtin.include_tasks: vault_status.yaml
-  when: install_vault | bool
-  
-#- name: Run vault init tasks
-#  ansible.builtin.import_tasks: vault_init.yaml
-#  tags: vault_init
-
-#- name: Unseal vault
-#  ansible.builtin.import_tasks: vault_unseal.yaml
-#  tags: vault_unseal
+- name: Unseal vault
+  ansible.builtin.import_tasks: vault_unseal.yaml
+  tags: vault_unseal
 
 - name: Vault secrets init
   ansible.builtin.import_tasks: vault_secrets_init.yaml
