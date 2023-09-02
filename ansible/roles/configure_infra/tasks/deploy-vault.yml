@@ -4,6 +4,7 @@
     name: hashicorp
     repo_url: https://helm.releases.hashicorp.com
     state: present
+  when: install_vault | bool
 
 - name: Install Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
@@ -14,7 +15,20 @@
     create_namespace: true
     values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
     state: present
+  when: install_vault | bool
 
-#- name: Remove vault
-#  shell: |
-#    oc delete ClusterRoleBinding hashicorp-vault-server-binding
+- name: Remove Helm chart from HashiCorp Vault repository
+  community.kubernetes.helm:
+    name: hashicorp-vault
+    chart_ref: vault
+    chart_repo_url: https://helm.releases.hashicorp.com
+    release_namespace: hashicorp-vault
+    create_namespace: true
+    values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
+    state: absent
+  when: install_vault | not bool
+
+- name: Remove vault
+  shell: |
+    oc delete ClusterRoleBinding hashicorp-vault-server-binding
+  when: install_vault | not bool

@@ -1,4 +1,6 @@
 ---
+install_vault: true
+
 # defaults file for configure-infra
 openshift_token: 12345678
 openshift_url: https://api.ocp4.example.com:6443
