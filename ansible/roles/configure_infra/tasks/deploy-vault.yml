@@ -10,7 +10,7 @@
     name: hashicorp-vault
     chart_ref: vault
     chart_repo_url: https://helm.releases.hashicorp.com
-    release_namespace: hashicorp-vault
+    release_namespace: vault
     create_namespace: true
     values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
     state: present
