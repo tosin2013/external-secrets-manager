@@ -17,6 +17,15 @@
     state: present
   when: install_vault | bool
 
+# create openshift route from template 
+- name: Create openshift route from template 
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
+    validate:
+      fail_on_error: yes
+  when: install_vault | bool
+
 - name: Remove Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
     name: hashicorp-vault
@@ -27,6 +36,14 @@
     values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
     state: absent
   ignore_errors: yes
+  when: not install_vault | bool
+
+- name: Delete openshift route from template 
+  community.kubernetes.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
+    validate:
+      fail_on_error: yes
   when: not install_vault | bool
 
 # wait for vault pod to be deleted

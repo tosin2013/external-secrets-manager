@@ -1,0 +1,24 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: hashicorp-vault
+  namespace: hashicorp-vault
+  labels:
+    app.kubernetes.io/instance: hashicorp-vault
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vault
+    helm.sh/chart: vault-0.25.0
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: "hashicorp-vault-hashicorp-vault.{{ localClusterDomain }}"
+  to:
+    kind: Service
+    name: hashicorp-vault
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+  wildcardPolicy: None
+
