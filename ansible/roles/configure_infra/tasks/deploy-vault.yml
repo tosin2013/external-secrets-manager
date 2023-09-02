@@ -1,21 +1,16 @@
 # Deploy vault using a helm chart
-- name: Install Vault Helm chart
-  community.kubernetes.helm:
-    name: hashicorp-vault
-    chart_ref: openshift/apps/hashicorp-vault
-    release_namespace: vault
-    values:
-      global:
-        localClusterDomain: "{{ localClusterDomain }}"
-      image:
-        tag: "{{ image_tag }}"
-      # Add more key-value pairs as needed
-  tags: install_vault 
+- name: Add HashiCorp Vault Helm repository
+  community.kubernetes.helm_repository:
+    name: hashicorp
+    repo_url: https://helm.releases.hashicorp.com
+    state: present
 
-- name: Delete Vault Helm release
+- name: Install Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
     name: hashicorp-vault
-    release_namespace: vault
-    state: absent
-  become: yes
-  tags: delete_vault
+    chart_ref: vault
+    chart_repo_url: https://helm.releases.hashicorp.com
+    release_namespace: hashicorp-vault
+    create_namespace: true
+    values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
+    state: present
