@@ -2,7 +2,7 @@
 global:
   openshift: true
   namespace: "vault"
-  localClusterDomain: "{{ localClusterDomain}}"
+  localClusterDomain: "{{ localClusterDomain }}"
 
 vault:
   injector:

@@ -1,6 +1,6 @@
 ---
 - name: Wait for pods to be running
-  shell: oc get pods -n vault --no-headers | grep Running | wc -l
+  shell: oc get pods -n hashicorp-vault --no-headers | grep Running | wc -l
   register: pod_count
   until: pod_count.stdout|int >= 1
   retries: 12  # Adjust as needed
@@ -8,7 +8,7 @@
   tags: vault_init 
 
 - name: Initialize Vault
-  shell: oc -n vault rsh hashicorp-vault-0 vault operator init
+  shell: oc -n hashicorp-vault rsh hashicorp-vault-0 vault operator init
   register: vault_init_output
   tags: vault_init 
 
@@ -27,19 +27,19 @@
   tags: vault_init 
 
 - name: Unseal Vault
-  shell: "oc -n vault rsh hashicorp-vault-0 vault operator unseal {{ item }}"
+  shell: "oc -n hashicorp-vault rsh hashicorp-vault-0 vault operator unseal {{ item }}"
   loop: "{{ vault_unseal_keys }}"
   tags: vault_init 
 
 - name: Join pods to Raft cluster and unseal them
   shell: |
-    oc -n vault rsh {{ item }} vault operator raft join http://hashicorp-vault-0.vault-internal:8200
-    oc -n vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[0] }}
-    oc -n vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[1] }}
-    oc -n vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[2] }}
+    oc -n hashicorp-vault rsh {{ item }} vault operator raft join http://hashicorp-vault-0.vault-internal:8200
+    oc -n hashicorp-vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[0] }}
+    oc -n hashicorp-vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[1] }}
+    oc -n hashicorp-vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[2] }}
   loop: "{{ ['hashicorp-vault-0'] }}"  # You can add more pods here
   tags: vault_init 
 
 - name: Login to Vault
-  shell: "oc -n vault rsh hashicorp-vault-0 vault login {{ vault_root_token }}"
+  shell: "oc -n hashicorp-vault rsh hashicorp-vault-0 vault login {{ vault_root_token }}"
   tags: vault_init 

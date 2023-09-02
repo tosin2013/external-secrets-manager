@@ -10,7 +10,11 @@
     name: hashicorp-vault
     chart_ref: vault
     chart_repo_url: https://helm.releases.hashicorp.com
-    release_namespace: vault
+    release_namespace: hashicorp-vault
     create_namespace: true
     values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
     state: present
+
+#- name: Remove vault
+#  shell: |
+#    oc delete ClusterRoleBinding hashicorp-vault-server-binding
