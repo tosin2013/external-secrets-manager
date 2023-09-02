@@ -24,6 +24,22 @@
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
   when: install_vault | bool
 
+
+# wait for vault pod to be created
+- name: Wait for vault pod to be created
+  community.kubernetes.k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: hashicorp-vault
+    label_selectors:
+      - app.kubernetes.io/instance=hashicorp-vault
+  register: vault_pod
+  until: vault_pod.resources | length == 1
+  retries: 30
+  delay: 10
+  when: install_vault | bool
+
+
 - name: Remove Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
     name: hashicorp-vault
