@@ -22,8 +22,6 @@
   community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
-    validate:
-      fail_on_error: yes
   when: install_vault | bool
 
 - name: Remove Helm chart from HashiCorp Vault repository
@@ -42,8 +40,6 @@
   community.kubernetes.k8s:
     state: absent
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
-    validate:
-      fail_on_error: yes
   when: not install_vault | bool
 
 # wait for vault pod to be deleted
