@@ -29,8 +29,31 @@
   ignore_errors: yes
   when: not install_vault | bool
 
+# wait for vault pod to be deleted
+- name: Wait for vault pod to be deleted
+  community.kubernetes.k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: hashicorp-vault
+    label_selectors:
+      - app.kubernetes.io/name=vault
+  register: vault_pod
+  until: vault_pod.resources | length == 0
+  retries: 30
+  delay: 10
+  when: not install_vault | bool
+
 - name: Remove vault
   shell: |
     oc delete ClusterRoleBinding hashicorp-vault-server-binding
+  ignore_errors: yes
+  when: not install_vault | bool
+
+# delete vault namespace
+- name: Delete vault namespace
+  community.kubernetes.k8s:
+    state: absent
+    kind: Namespace
+    name: hashicorp-vault
   ignore_errors: yes
   when: not install_vault | bool
