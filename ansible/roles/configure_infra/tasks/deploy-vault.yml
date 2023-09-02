@@ -26,9 +26,11 @@
     create_namespace: true
     values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
     state: absent
+  ignore_errors: yes
   when: not install_vault | bool
 
 - name: Remove vault
   shell: |
     oc delete ClusterRoleBinding hashicorp-vault-server-binding
+  ignore_errors: yes
   when: not install_vault | bool
