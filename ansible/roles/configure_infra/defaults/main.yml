@@ -10,7 +10,7 @@ insecure_skip_tls_verify: true
 # Vault vaules
 localClusterDomain: apps.foo.cluster.com
 
-hubClusterDomain: hub.example.com
+set_hubClusterDomain: hub.example.com
 clusterDomain: foo.example.com
 
 ## using "registry.connect.redhat.com/hashicorp/vault"

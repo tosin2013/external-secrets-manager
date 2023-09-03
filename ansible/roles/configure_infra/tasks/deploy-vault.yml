@@ -76,6 +76,7 @@
   ansible.builtin.shell: "oc {{ use_oc_command }} -f  /tmp/golang-external-secrets.yaml"
   delegate_to: localhost
   become: false
+  ignore_errors: true
   when: install_vault | bool
 
 - name: Remove Helm chart from HashiCorp Vault repository
