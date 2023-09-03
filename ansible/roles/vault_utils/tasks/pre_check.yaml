@@ -1,4 +1,7 @@
 ---
+- name: Login to OpenShift
+  shell: oc login --token={{ openshift_token }} --server={{ openshift_url }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}
+
 - name: Check if the kubernetes python module is usable from ansible
   ansible.builtin.command: "{{ ansible_python_interpreter }} -c 'import kubernetes'"
   changed_when: false

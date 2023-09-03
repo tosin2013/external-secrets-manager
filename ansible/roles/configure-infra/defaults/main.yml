@@ -1,5 +1,6 @@
 ---
 install_vault: true
+push_secrets: false 
 
 # defaults file for configure-infra
 openshift_token: 12345678

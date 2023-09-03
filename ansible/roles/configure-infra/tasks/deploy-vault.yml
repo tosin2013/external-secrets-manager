@@ -38,6 +38,34 @@
     name: golang-external-secrets
   when: install_vault | bool
 
+- name: Generate and apply Kubernetes manifest using Helm
+  kubernetes.core.helm_template:
+    name: golang-external-secrets
+    chart_ref: /home/lab-user/external-secrets-manager/openshift/apps/golang-external-secrets
+    values: "{{ lookup('template', 'external-secrets-vaules.yaml') | from_yaml }}"
+    release_namespace: golang-external-secrets
+  register: helm_output
+  when: install_vault | bool
+
+# Set fact from helm output
+- name: Set fact from helm output
+  set_fact:
+    use_helm_output: "{{ helm_output.stdout }}"
+  when: install_vault | bool
+
+# Saving the helm output to a file
+- name: Saving the helm output to a file
+  copy:
+    content: "{{ use_helm_output }}"
+    dest: /tmp/golang-external-secrets.yaml
+  when: install_vault | bool
+
+
+- name: Apply Kubernetes manifest using oc command
+  ansible.builtin.shell: "oc apply -f  /tmp/golang-external-secrets.yaml"
+  delegate_to: localhost
+  become: false
+  when: install_vault | bool
 
 - name: Remove Helm chart from HashiCorp Vault repository
   community.kubernetes.helm:
@@ -46,7 +74,9 @@
     chart_repo_url: https://helm.releases.hashicorp.com
     release_namespace: hashicorp-vault
     create_namespace: true
-    values: "{{ lookup('template', 'values.yaml') | from_yaml }}"
+    values:
+      global:
+        hubClusterDomain: "{{ hubClusterDomain }}"
     state: absent
   ignore_errors: yes
   when: not install_vault | bool
@@ -87,7 +117,7 @@
   when: not install_vault | bool
 
   # delete golang-external-secrets namespace
-- name: Delete golang-external-secrets namespace
+- name: Delete git namespace
   community.kubernetes.k8s:
     state: absent
     kind: Namespace

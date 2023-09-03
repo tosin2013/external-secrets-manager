@@ -1,6 +1,10 @@
 ---
 # defaults file for vault_utils
 values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
+vault_push_secrets: false # Set to true to push secrets to vault
+vault_secrets_init: false # Set to true to initialize vault secrets
+vault_spokes_init: false # Set to true to initialize vault spokes
+
 kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
 kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"
 vault_ns: "hashicorp-vault"
