@@ -42,7 +42,9 @@
   kubernetes.core.helm_template:
     name: golang-external-secrets
     chart_ref: /home/lab-user/external-secrets-manager/openshift/apps/golang-external-secrets
-    values: "{{ lookup('template', 'external-secrets-vaules.yaml') | from_yaml }}"
+    values:
+      global:
+        hubClusterDomain: "{{ hubClusterDomain }}"
     release_namespace: golang-external-secrets
   register: helm_output
   when: install_vault | bool
