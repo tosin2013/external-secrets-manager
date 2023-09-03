@@ -60,9 +60,20 @@
     dest: /tmp/golang-external-secrets.yaml
   when: install_vault | bool
 
+# when install_vault is true set fact to apply the manifest using oc command
+- name: Set fact to apply the manifest using oc command
+  set_fact:
+    use_oc_command: "apply"
+  when: install_vault | bool
+
+# when install_vault is false set fact to apply the manifest using oc command
+- name: Set fact to apply the manifest using oc command
+  set_fact:
+    use_oc_command: "delete"
+  when: not install_vault | bool
 
 - name: Apply Kubernetes manifest using oc command
-  ansible.builtin.shell: "oc apply -f  /tmp/golang-external-secrets.yaml"
+  ansible.builtin.shell: "oc {{ use_oc_command }} -f  /tmp/golang-external-secrets.yaml"
   delegate_to: localhost
   become: false
   when: install_vault | bool
