@@ -59,7 +59,7 @@
 - name: Apply Kubernetes manifest using oc command
   ansible.builtin.shell: |
     helm template --values=/tmp/external-secrets-vaules.yaml \
-    golang-external-secrets {{ lookup('env', 'HOME') }}/external-secrets-manager/openshift/apps/golang-external-secrets \
+    golang-external-secrets {{ playbook_dir }}/openshift/apps/golang-external-secrets \
     --namespace golang-external-secrets | oc {{ use_oc_command }} -f -
   delegate_to: localhost
   become: false

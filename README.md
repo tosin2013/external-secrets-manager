@@ -33,6 +33,7 @@ ansible-navigator:
     inventory:
       entries:
       - $HOME/external-secrets-manager/inventories/${INVENTORY}
+      - $HOME/external-secrets-manager/vars
   execution-environment:
     container-engine: podman
     enabled: true
@@ -65,15 +66,15 @@ $ ansible-navigator run install-vault.yaml  --extra-vars "install_vault=true" \
 **Copy template from /vars folder**
 *For AWS Secrets*
 ```
-$ cp vars/values-secret.aws.yaml.template ~/values-secret.yaml
+$ cp vars/values-secret.aws.yaml.template vars/values-secret.yaml
 ```
 *For Git Credentials*
 ```
-$ cp vars/values-secret.git.yaml.template ~/values-secret.yaml
+$ cp vars/values-secret.git.yaml.template  vars/values-secret.yaml
 ```
 *For Quay Secret*
 ```
-$ cp vars/values-secret.quay.yaml.template ~/values-secret.yaml
+$ cp vars/values-secret.quay.yaml.template  vars/values-secret.yaml
 ```
 
 **Push secrets and configure secrets**
