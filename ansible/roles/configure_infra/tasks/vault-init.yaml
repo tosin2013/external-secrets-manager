@@ -48,6 +48,6 @@
 - name: Print out Root Token and prompt user to save it
   debug:
     msg: |
-      Root Token: {{ vault_root_token }}
+      Root Token: {{ vault_root_token }} \n
       Please save this token to a safe place. You will need it to access Vault.
   when: install_vault | bool
