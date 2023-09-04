@@ -44,18 +44,10 @@
   shell: "oc -n hashicorp-vault rsh hashicorp-vault-0 vault login {{ vault_root_token }}"
   when: install_vault | bool
 
-# save root token to home directory 
-- name: Save root token to home directory
-  copy:
-    content: "{{ vault_root_token }}"
-    dest: "{{ lookup('env', 'HOME') }}/vault_root_token"
-    mode: '0600'
-  delegate_to: localhost
-  when: install_vault | bool
-
-# Debug show vault root token path 
-- name: Debug show vault root token path
+# Print out Root Token and prompt user to save it 
+- name: Print out Root Token and prompt user to save it
   debug:
-    msg: "Path to vault root Token: {{ lookup('env', 'HOME') }}/vault_root_token"
-  delegate_to: localhost
+    msg: |
+      Root Token: {{ vault_root_token }}
+      Please save this token to a safe place. You will need it to access Vault.
   when: install_vault | bool
