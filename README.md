@@ -58,7 +58,7 @@ vim inventories/bastion/group_vars/all.yml
 
 **Deploy and configure vault**
 ```
-$ ansible-navigator run vault.yaml  --extra-vars "install_vault=true" \
+$ ansible-navigator run install-vault.yaml  --extra-vars "install_vault=true" \
  --vault-password-file $HOME/.vault_password -m stdout 
 ```
 
@@ -84,7 +84,7 @@ $ ansible-navigator run push-secrets.yaml --extra-vars "vault_push_secrets=true"
 
 **Delete and remove vault and external-secrets**
 ```
-$ ansible-navigator run vault.yaml  --extra-vars "install_vault=false" \
+$ ansible-navigator run install-vault.yaml  --extra-vars "install_vault=false" \
  --vault-password-file $HOME/.vault_password -m stdout 
 ```
 
