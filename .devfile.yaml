@@ -1,6 +1,6 @@
 schemaVersion: 2.2.0
 metadata:
-  name: rhel-edge-management-role 
+  name: external-secrets-manager
 components:
   - name: tooling-container
     container:
