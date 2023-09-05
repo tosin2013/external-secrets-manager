@@ -6,6 +6,9 @@ This is a simple example of how to use external secrets manager to manage secret
 - Ansible Navigator
 - Podman
 
+## For Deployment in OpneShift Dev Spaces
+* [Deploy and configure External Secrets Manager on OpenShift Dev Spaces](docs/devspaces.md)
+
 ## Usage
 
 **Git Clone Repo**
@@ -20,6 +23,13 @@ cd $HOME/external-secrets-manager/
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
 ssh-copy-id $USER@${IP_ADDRESS}
+```
+
+**Configure ansible vault secret**
+```
+curl -OL https://gist.githubusercontent.com/tosin2013/022841d90216df8617244ab6d6aceaf8/raw/92400b9e459351d204feb67b985c08df6477d7fa/ansible_vault_setup.sh
+chmod +x ansible_vault_setup.sh
+./ansible_vault_setup.sh
 ```
 
 **Create Ansible navigator config file**
