@@ -74,6 +74,7 @@ $ ansible-navigator run install-vault.yaml  --extra-vars "install_vault=true" \
 ```
 
 **Copy template from /vars folder**
+
 *For AWS Secrets*
 ```
 $ cp vars/values-secret.aws.yaml.template vars/values-secret.yaml
