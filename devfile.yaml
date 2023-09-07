@@ -29,7 +29,7 @@ components:
     args: ['tail', '-f', '/dev/null']
     env:
     - name: VSCODE_DEFAULT_WORKSPACE
-      value: "/projects/che-test-repo/che-test.code-workspace"
+      value: "/projects/external-secrets-manager/vscode-config.code-workspace"
 - name: oc-cli
   container:
     args:
