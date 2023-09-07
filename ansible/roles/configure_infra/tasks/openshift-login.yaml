@@ -1,3 +1,25 @@
 ---
+- name: Check if the kubernetes python module is usable from ansible
+  ansible.builtin.command: "{{ ansible_python_interpreter }} -c 'import kubernetes'"
+  changed_when: false
+
+- name: Check if KUBECONFIG is correctly set
+  ansible.builtin.debug:
+    msg: "KUBECONFIG is not set, falling back to ~/.kube/config"
+  when: kubeconfig is not defined or kubeconfig | length == 0
+
+- name: Check if ~/.kube/config exists
+  ansible.builtin.stat:
+    path: "{{ kubeconfig_backup }}"
+  register: kubeconfig_result
+
+- name: Check if we're running inside an OCP cluster directly
+  ansible.builtin.set_fact:
+    running_in_ocp: "{{ lookup('env', 'KUBERNETES_SERVICE_HOST') | length > 0 | bool }}"
+
 - name: Login to OpenShift
   shell: oc login --token={{ openshift_token }} --server={{ openshift_url }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}
+  when:
+    - not running_in_ocp
+    - not kubeconfig_result.stat.exists
+    - kubeconfig is not defined or kubeconfig | length == 0
