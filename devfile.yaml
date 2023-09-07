@@ -1,0 +1,62 @@
+schemaVersion: 2.2.0
+attributes:
+  controller.devfile.io/storage-type: per-workspace
+metadata:
+  name: external-secrets-manager
+projects:
+- name: external-secrets-manager
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/tosin2013/external-secrets-manager.git
+- name: sno-quickstarts
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/tosin2013/sno-quickstarts.git
+components:
+- name: tooling-container
+  container:
+    image: quay.io/mloriedo/ansible-creator-ee:latest
+    memoryRequest: 256M
+    memoryLimit: 6Gi
+    cpuRequest: 250m
+    cpuLimit: 2000m
+    args: ['tail', '-f', '/dev/null']
+    env:
+    - name: VSCODE_DEFAULT_WORKSPACE
+      value: "/projects/che-test-repo/che-test.code-workspace"
+- name: oc-cli
+  container:
+    args:
+      - '-c'
+      - >-
+        mkdir -p /projects/bin && cp /usr/bin/oc /projects/bin/oc && cp /usr/bin/kubectl /projects/bin/kubectl
+    command:
+      - /bin/bash
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    sourceMapping: /projects
+    mountSources: true
+    memoryLimit: 256M
+commands:
+- id: oc-install
+  exec:
+    commandLine: '/usr/local/bin/ansible-playbook ${PROJECT_SOURCE}/ansible/playbooks/devspaces/install_oc.yml'
+    workingDir: ${PROJECT_SOURCE}
+    group:
+      kind: build
+      isDefault: true
+    component: tooling-container
+- apply:
+    component: oc-cli
+    label: Copy OpenShift CLI
+  id: cp-oc-cli
+events:
+  postStart:
+    - "oc-install"
+  preStart:
+    - cp-oc-cli
