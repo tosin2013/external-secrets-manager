@@ -33,9 +33,9 @@ oc create -f apps/device-edge-demos/cluster-config.yaml
 
 Edit `inventories/controller/group_vars/all.yml` and update the following variables:
 ```
-openshift_token: 12345678
-openshift_url: https://api.ocp4.example.com:6443
-insecure_skip_tls_verify: true
+# openshift_token: 12345678
+# openshift_url: https://api.ocp4.example.com:6443
+# insecure_skip_tls_verify: true
 
 install_vault: true
 push_secrets: false 
