@@ -1,7 +1,7 @@
 ---
 global:
   openshift: true
-  namespace: "vault"
+  namespace: "hashicorp-vault"
   localClusterDomain: "{{ localClusterDomain }}"
 
 vault:
