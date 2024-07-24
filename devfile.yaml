@@ -1,6 +1,6 @@
 schemaVersion: 2.2.2
 metadata:
-  name: baremetal-playbooks
+  name: external-secrets-manager
 components:
   - name: tooling-container
     container:
