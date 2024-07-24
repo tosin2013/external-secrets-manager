@@ -6,7 +6,7 @@ This is a simple example of how to use external secrets manager to manage secret
 - Ansible Navigator
 - Podman
 
-## For Deployment in OpneShift Dev Spaces
+## For Deployment in Openshift Dev Spaces
 * [Deploy and configure External Secrets Manager on OpenShift Dev Spaces](docs/devspaces.md)
 
 ## Usage

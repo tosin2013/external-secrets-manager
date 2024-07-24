@@ -18,6 +18,9 @@ pattern_dir: "{{ lookup('env', 'HOME') }}/external-secrets-manager"
 ## using "registry.connect.redhat.com/hashicorp/vault"
 image_tag: 1.14.0-ubi
 
+# Vault Helm chart version
+vault_helm_version: v0.25.0 # default v0.25.0
+
 values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
 kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
 kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"

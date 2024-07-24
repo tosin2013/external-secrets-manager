@@ -46,6 +46,10 @@ vault_secrets_init: false # Set to true to initialize vault secrets
 localClusterDomain: apps.foo.cluster.com
 hubClusterDomain: apps.hub.example.com
 clusterDomain: foo.example.com
+
+# Vault Helm chart version Change to vaule below
+vault_helm_version: v0.19.0 # default v0.25.0
+
 ```
 ![20230904162438](https://i.imgur.com/DGfiJ0y.png)
 
