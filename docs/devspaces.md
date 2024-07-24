@@ -5,7 +5,7 @@
 
 ## Steps
 
-1. Login to OpenShift
+1. Check if OpenShift is loggedin.
 ```
 oc login -u <username> -p <password> <cluster_url>
 ```
@@ -48,7 +48,7 @@ hubClusterDomain: apps.hub.example.com
 clusterDomain: foo.example.com
 
 # Vault Helm chart version Change to vaule below
-vault_helm_version: v0.19.0 # default v0.25.0
+vault_helm_version: v0.28.1 # default v0.25.0
 
 ```
 ![20230904162438](https://i.imgur.com/DGfiJ0y.png)
