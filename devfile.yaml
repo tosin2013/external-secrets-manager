@@ -4,7 +4,7 @@ metadata:
 components:
   - name: tooling-container
     container:
-      image: quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9#quay.io/devspaces/ansible-creator-ee@sha256:5d9bc07920753cfd1aafcab21358060d08f846865d5dd75a02941787471c838c
+      image: quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9 #quay.io/devspaces/ansible-creator-ee@sha256:5d9bc07920753cfd1aafcab21358060d08f846865d5dd75a02941787471c838c
       memoryRequest: 256M
       memoryLimit: 6Gi
       cpuRequest: 250m
