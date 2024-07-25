@@ -5,3 +5,4 @@ collections:
   - community.general
   - kubernetes.core
   - community.kubernetes
+  - community.kubernetes
