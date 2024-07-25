@@ -66,6 +66,11 @@ spec:
         steps:
           - name: create-config
             image: alpine:latest
+            env:
+              - name: QUAY_USERNAME
+                value: $(params.quay-username)
+              - name: IMAGE_TAG
+                value: $(params.image_tag)
             script: |
               #!/bin/sh
               cat > /workspace/shared-workspace/.ansible-navigator.yml <<EOF
@@ -81,7 +86,7 @@ spec:
                   environment-variables:
                     pass:
                     - USER
-                  image: quay.io/$(params.quay-username)/external-secrets-manager:$(params.image_tag)
+                  image: quay.io/${QUAY_USERNAME}/external-secrets-manager:${IMAGE_TAG}
                   pull:
                     policy: missing
                 logging:
