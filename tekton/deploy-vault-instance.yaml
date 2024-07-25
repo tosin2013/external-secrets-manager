@@ -4,6 +4,12 @@ metadata:
   name: deploy-vault-instance-pipeline
 spec:
   params:
+    - name: quay_username
+      type: string
+      description: "Quay username"
+    - name: image_tag
+      type: string
+      description: "Image tag"
     - name: openshift_token
       type: string
       description: "OpenShift token"

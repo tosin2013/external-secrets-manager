@@ -6,6 +6,10 @@ spec:
   pipelineRef:
     name: deploy-vault-instance-pipeline
   params:
+    - name: quay_username
+      value: "your-quay-username"  # Replace with the actual value
+    - name: image_tag
+      value: "your-image-tag"  # Replace with the actual value
     - name: openshift_token
       value: "your-openshift-token"
     - name: openshift_url
