@@ -46,10 +46,6 @@ spec:
       type: string
       description: "Pattern directory"
       default: "{{ lookup('env', 'HOME') }}/external-secrets-manager"
-    - name: image_tag
-      type: string
-      description: "Image tag"
-      default: "1.14.0-ubi"
     - name: vault_helm
       type: string
       description: "Vault Helm chart version"
