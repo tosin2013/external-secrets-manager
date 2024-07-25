@@ -1,0 +1,179 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: deploy-vault-instance-pipeline
+spec:
+  params:
+    - name: openshift_token
+      type: string
+      description: "OpenShift token"
+    - name: openshift_url
+      type: string
+      description: "OpenShift URL"
+    - name: insecure_skip_tls_verify
+      type: string
+      description: "Skip TLS verification"
+      default: "true"
+    - name: install_vault
+      type: string
+      description: "Install Vault"
+      default: "true"
+    - name: push_secrets
+      type: string
+      description: "Push secrets"
+      default: "false"
+    - name: vault_secrets_init
+      type: string
+      description: "Initialize Vault secrets"
+      default: "false"
+    - name: localClusterDomain
+      type: string
+      description: "Local cluster domain"
+    - name: hubClusterDomain
+      type: string
+      description: "Hub cluster domain"
+    - name: clusterDomain
+      type: string
+      description: "Cluster domain"
+    - name: pattern_dir
+      type: string
+      description: "Pattern directory"
+      default: "{{ lookup('env', 'HOME') }}/external-secrets-manager"
+    - name: image_tag
+      type: string
+      description: "Image tag"
+      default: "1.14.0-ubi"
+    - name: vault_helm
+      type: string
+      description: "Vault Helm chart version"
+      default: "0.28.1"
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: git-clone-repo
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: "https://github.com/tosin2013/external-secrets-manager.git"
+        - name: revision
+          value: "main"
+    - name: create-ansible-navigator-config
+      taskSpec:
+        steps:
+          - name: create-config
+            image: alpine:latest
+            script: |
+              #!/bin/sh
+              cat > /workspace/shared-workspace/.ansible-navigator.yml <<EOF
+              ---
+              ansible-navigator:
+                ansible:
+                  inventory:
+                    entries:
+                    - /workspace/shared-workspace/inventories/bastion
+                execution-environment:
+                  container-engine: podman
+                  enabled: true
+                  environment-variables:
+                    pass:
+                    - USER
+                  image: quay.io/$(params.quay-username)/external-secrets-manager:$(params.image_tag)
+                  pull:
+                    policy: missing
+                logging:
+                  append: true
+                  file: /tmp/navigator/ansible-navigator.log
+                  level: debug
+                playbook-artifact:
+                  enable: false
+              EOF
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+    - name: update-inventory-file
+      taskSpec:
+        params:
+          - name: openshift_token
+            type: string
+          - name: openshift_url
+            type: string
+          - name: insecure_skip_tls_verify
+            type: string
+          - name: install_vault
+            type: string
+          - name: push_secrets
+            type: string
+          - name: vault_secrets_init
+            type: string
+          - name: localClusterDomain
+            type: string
+          - name: hubClusterDomain
+            type: string
+          - name: clusterDomain
+            type: string
+          - name: pattern_dir
+            type: string
+          - name: image_tag
+            type: string
+          - name: vault_helm
+            type: string
+        steps:
+          - name: update-inventory
+            image: alpine:latest
+            script: |
+              #!/bin/sh
+              echo "[control]" > /workspace/shared-workspace/inventories/bastion/hosts
+              echo "control ansible_host=$(hostname -I | awk '{print $1}') ansible_user=lab-user" >> /workspace/shared-workspace/inventories/bastion/hosts
+              cat > /workspace/shared-workspace/inventories/controller/group_vars/all.yml <<EOF
+              openshift_token: $(params.openshift_token)
+              openshift_url: $(params.openshift_url)
+              insecure_skip_tls_verify: $(params.insecure_skip_tls_verify)
+
+              install_vault: $(params.install_vault)
+              push_secrets: $(params.push_secrets)
+              vault_secrets_init: $(params.vault_secrets_init)
+
+              localClusterDomain: $(params.localClusterDomain)
+              hubClusterDomain: $(params.hubClusterDomain)
+              clusterDomain: $(params.clusterDomain)
+
+              pattern_dir: $(params.pattern_dir)
+
+              image_tag: $(params.image_tag)
+              vault_helm: $(params.vault_helm)
+              vault_helm_version: v$(params.vault_helm)
+              vault_helm_route_tag: vault-$(params.vault_helm)
+              EOF
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+    - name: deploy-configure-vault
+      taskSpec:
+        steps:
+          - name: deploy-vault
+            image: ansible/ansible-runner
+            script: |
+              #!/bin/sh
+              ansible-navigator run /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=true" --vault-password-file /root/.vault_password -m stdout
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+    - name: push-secrets
+      taskSpec:
+        steps:
+          - name: push-secrets
+            image: ansible/ansible-runner
+            script: |
+              #!/bin/sh
+              ansible-navigator run /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=true" --extra-vars "vault_secrets_init=true" --vault-password-file /root/.vault_password -m stdout
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: tekton-shared-workspace-pvc

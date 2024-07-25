@@ -1,0 +1,87 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-push-image-pipeline
+spec:
+  params:
+    - name: git-repo-url
+      type: string
+      description: "Git repository URL"
+      default: "https://github.com/tosin2013/external-secrets-manager.git"
+    - name: git-revision
+      type: string
+      description: "Git revision"
+      default: "main"
+    - name: image-tag
+      type: string
+      description: "Image tag"
+      default: "1.14.0-ubi"
+    - name: quay-username
+      type: string
+      description: "Quay username"
+    - name: quay-password
+      type: string
+      description: "Quay password"
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: git-clone-repo
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-repo-url)
+        - name: revision
+          value: $(params.git-revision)
+    - name: create-ansible-builder-requirements
+      taskSpec:
+        steps:
+          - name: create-requirements
+            image: alpine:latest
+            script: |
+              #!/bin/sh
+              cat > /workspace/shared-workspace/ansible-builder/requirements.yml <<EOF
+              ---
+              collections:
+                - ansible.posix
+                - containers.podman
+                - community.general
+                - kubernetes.core
+                - community.kubernetes
+              EOF
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+    - name: build-image
+      taskRef:
+        name: build-image
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: quay.io/$(params.quay-username)/external-secrets-manager:$(params.image-tag)
+        - name: CONTEXT
+          value: /workspace/source
+    - name: push-image
+      taskRef:
+        name: push-image
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: quay.io/$(params.quay-username)/external-secrets-manager:$(params.image-tag)
+        - name: DOCKER_CREDENTIALS
+          value: |
+            {
+              "auths": {
+                "quay.io": {
+                  "username": "$(params.quay-username)",
+                  "password": "$(params.quay-password)"
+                }
+              }
+            }
