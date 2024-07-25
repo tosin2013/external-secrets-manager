@@ -119,8 +119,10 @@ spec:
             name: create-config
             script: |
               #!/bin/sh
-              ls -lath /workspace/shared-workspace
-              ls -R /workspace/shared-workspace
+              curl -OL https://gist.githubusercontent.com/tosin2013/022841d90216df8617244ab6d6aceaf8/raw/92400b9e459351d204feb67b985c08df6477d7fa/ansible_vault_setup.sh
+              chmod +x ansible_vault_setup.sh
+              echo "PIPELINE_PASSWORD" > /workspace/shared-workspace/.vault_password
+              ./ansible_vault_setup.sh
               cat > /workspace/shared-workspace/.ansible-navigator.yml <<EOF
               ---
               ansible-navigator:
@@ -151,6 +153,8 @@ spec:
                 playbook-artifact:
                   enable: false
               EOF
+              ln -s /workspace/shared-workspace/ansible/roles /workspace/shared-workspace/roles
+              ln -s /workspace/shared-workspace/ansible/plugins /workspace/shared-workspace/plugins
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
@@ -281,7 +285,7 @@ spec:
             name: deploy-vault
             script: |
               #!/bin/sh
-              ansible-playbook /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=$(params.install_vault)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file /root/.vault_password
+              ansible-playbook /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=$(params.install_vault)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file  /workspace/shared-workspace/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
@@ -327,7 +331,7 @@ spec:
             name: push-secrets
             script: |
               #!/bin/sh
-              ansible-playbook /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=$(params.push_secrets)" --extra-vars "vault_secrets_init=$(params.vault_secrets_init)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file /root/.vault_password
+              ansible-playbook /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=$(params.push_secrets)" --extra-vars "vault_secrets_init=$(params.vault_secrets_init)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file  /workspace/shared-workspace/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
