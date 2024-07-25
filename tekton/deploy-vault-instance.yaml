@@ -224,25 +224,48 @@ spec:
               echo "[control]" > /workspace/shared-workspace/inventories/bastion/hosts
               echo "roles_path=/workspace/shared-workspace/roles" >> /workspace/shared-workspace/inventories/bastion/hosts
               echo "control ansible_host=localhost ansible_user=runner" >> /workspace/shared-workspace/inventories/bastion/hosts
-              cat > /workspace/shared-workspace/inventories/controller/group_vars/all.yml <<EOF
-              openshift_token: $(params.openshift_token)
-              openshift_url: $(params.openshift_url)
-              insecure_skip_tls_verify: $(params.insecure_skip_tls_verify)
+              mkdir -p /workspace/shared-workspace/inventories/bastion/group_vars
+              cat > /workspace/shared-workspace/inventories/bastion/group_vars/all.yml <<EOF
+              openshift_token: "$(params.openshift_token)"
+              openshift_url: "$(params.openshift_url)"
+              insecure_skip_tls_verify: "$(params.insecure_skip_tls_verify)"
 
-              install_vault: $(params.install_vault)
-              push_secrets: $(params.push_secrets)
-              vault_secrets_init: $(params.vault_secrets_init)
+              install_vault: "$(params.install_vault)"
+              push_secrets: "$(params.push_secrets)"
+              vault_secrets_init: "$(params.vault_secrets_init)"
 
-              localClusterDomain: $(params.localClusterDomain)
-              hubClusterDomain: $(params.hubClusterDomain)
-              clusterDomain: $(params.clusterDomain)
+              localClusterDomain: "$(params.localClusterDomain)"
+              hubClusterDomain: "$(params.hubClusterDomain)"
+              clusterDomain: "$(params.clusterDomain)"
 
-              pattern_dir: $(params.pattern_dir)
+              pattern_dir: "$(params.pattern_dir)"
 
-              image_tag: $(params.image_tag)
-              vault_helm: $(params.vault_helm)
-              vault_helm_version: v$(params.vault_helm)
-              vault_helm_route_tag: vault-$(params.vault_helm)
+              image_tag: "$(params.image_tag)"
+              vault_helm: "$(params.vault_helm)"
+              vault_helm_version: "v$(params.vault_helm)"
+              vault_helm_route_tag: "vault-$(params.vault_helm)"
+
+              values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
+              kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
+              kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"
+              vault_ns: "hashicorp-vault"
+              vault_pod: "hashicorp-vault-0"
+              vault_hub: "hub"
+              vault_pvc: "data-vault-0"
+              vault_hub_kubernetes_host: "https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+              vault_hub_capabilities: '[\"read\"]'
+              vault_base_path: "secret"
+              vault_path: "{{ vault_base_path }}/{{ vault_hub }}"
+              vault_hub_ttl: "15m"
+              vault_spoke_capabilities: '[\"read\"]'
+              vault_spoke_ttl: "15m"
+              vault_global_policy: "global"
+              vault_global_capabilities: '[\"read\"]'
+              external_secrets_ns: "golang-external-secrets"
+              external_secrets_sa: "golang-external-secrets"
+              external_secrets_secret: "golang-external-secrets"
+              unseal_secret: "vaultkeys"
+              unseal_namespace: "imperative"
               EOF
       workspaces:
         - name: shared-workspace
@@ -285,7 +308,7 @@ spec:
             name: deploy-vault
             script: |
               #!/bin/sh
-              ansible-playbook /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=$(params.install_vault)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file  /workspace/shared-workspace/.vault_password
+              ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/install-vault.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
@@ -331,7 +354,7 @@ spec:
             name: push-secrets
             script: |
               #!/bin/sh
-              ansible-playbook /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=$(params.push_secrets)" --extra-vars "vault_secrets_init=$(params.vault_secrets_init)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file  /workspace/shared-workspace/.vault_password
+              ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/push-secrets.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
