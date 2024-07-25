@@ -8,7 +8,7 @@
 
 - name: Ensure Helm chart is installed from HashiCorp Vault repository
   community.kubernetes.helm:
-    name: hashicorp-vaulthelm
+    name: hashicorp-vault
     chart_ref: vault
     chart_repo_url: https://helm.releases.hashicorp.com
     chart_version: "{{ vault_helm_version }}"
