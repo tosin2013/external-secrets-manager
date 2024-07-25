@@ -18,6 +18,42 @@
     state: present
   when: install_vault | bool
 
+# Create Role for managing Route resources
+- name: Create Role for managing Route resources
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: route-manager
+        namespace: hashicorp-vault
+      rules:
+        - apiGroups: ["route.openshift.io"]
+          resources: ["routes"]
+          verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  when: install_vault | bool
+
+# Create RoleBinding for the service account
+- name: Create RoleBinding for the service account
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: route-manager-binding
+        namespace: hashicorp-vault
+      subjects:
+        - kind: ServiceAccount
+          name: default
+          namespace: hashicorp-vault
+      roleRef:
+        kind: Role
+        name: route-manager
+        apiGroup: rbac.authorization.k8s.io
+  when: install_vault | bool
+
 # create openshift route from template 
 - name: Create openshift route from template 
   community.kubernetes.k8s:
