@@ -38,7 +38,7 @@ spec:
     - name: image_tag
       type: string
       description: "Image tag"
-    - name: quay-username
+    - name: quay_username
       type: string
       description: "Quay username"
     - name: pattern_dir
@@ -69,7 +69,7 @@ spec:
         - git-clone-repo
       taskSpec:
         params:
-          - name: quay-username
+          - name: quay_username
             type: string
           - name: image_tag
             type: string
@@ -78,7 +78,7 @@ spec:
             image: alpine:latest
             env:
               - name: QUAY_USERNAME
-                value: $(params.quay-username)
+                value: $(params.quay_username)
               - name: IMAGE_TAG
                 value: $(params.image_tag)
             script: |
