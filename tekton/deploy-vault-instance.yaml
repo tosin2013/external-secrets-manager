@@ -70,6 +70,25 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
+    - name: check-workspace-not-empty
+      runAfter:
+        - git-clone-repo
+      taskSpec:
+        steps:
+          - name: check-workspace
+            image: alpine:latest
+            script: |
+              #!/bin/sh
+              if [ -z "$(ls -A /workspace/shared-workspace)" ]; then
+                echo "Workspace is empty after git clone"
+                exit 1
+              else
+                echo "Workspace is not empty"
+                ls -la /workspace/shared-workspace
+              fi
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
     - name: create-ansible-navigator-config
       params:
         - name: quay_username
@@ -77,7 +96,7 @@ spec:
         - name: image_tag
           value: $(params.image_tag)
       runAfter:
-        - git-clone-repo
+        - check-workspace-not-empty
       taskSpec:
         metadata: {}
         params:
@@ -93,10 +112,12 @@ spec:
                 value: $(params.quay_username)
               - name: IMAGE_TAG
                 value: $(params.image_tag)
-            image: 'alpine:latest'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9'
             name: create-config
             script: |
               #!/bin/sh
+              ls -lath /workspace/shared-workspace
+              ls -R /workspace/shared-workspace
               cat > /workspace/shared-workspace/.ansible-navigator.yml <<EOF
               ---
               ansible-navigator:
@@ -132,7 +153,7 @@ spec:
         - name: insecure_skip_tls_verify
           value: $(params.insecure_skip_tls_verify)
         - name: install_vault
-          value: $(params.push_secrets)
+          value: $(params.install_vault)
         - name: push_secrets
           value: $(params.push_secrets)
         - name: vault_secrets_init
@@ -181,15 +202,13 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'alpine:latest'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9'
             name: update-inventory
             script: |
               #!/bin/sh
-              ls -lath -R .
-              ls -lath -R /workspace/shared-workspace
-              pwd
+              mkdir -p /workspace/shared-workspace/inventories/bastion
               echo "[control]" > /workspace/shared-workspace/inventories/bastion/hosts
-              echo "control ansible_host=$(hostname -I | awk '{print $1}') ansible_user=lab-user" >> /workspace/shared-workspace/inventories/bastion/hosts
+              echo "control ansible_host=localhost ansible_user=runner" >> /workspace/shared-workspace/inventories/bastion/hosts
               cat > /workspace/shared-workspace/inventories/controller/group_vars/all.yml <<EOF
               openshift_token: $(params.openshift_token)
               openshift_url: $(params.openshift_url)
@@ -218,14 +237,27 @@ spec:
         - update-inventory-file
       taskSpec:
         metadata: {}
+        params:
+          - name: openshift_token
+            type: string
+          - name: openshift_url
+            type: string
+          - name: insecure_skip_tls_verify
+            type: string
+          - name: install_vault
+            type: string
+          - name: pattern_dir
+            type: string
+          - name: image_tag
+            type: string
         spec: null
         steps:
           - computeResources: {}
-            image: ansible/ansible-runner
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9'
             name: deploy-vault
             script: |
               #!/bin/sh
-              ansible-navigator run /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=true" --vault-password-file /root/.vault_password -m stdout
+              ansible-playbook /workspace/shared-workspace/install-vault.yaml --extra-vars "install_vault=$(params.install_vault)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file /root/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
@@ -234,14 +266,29 @@ spec:
         - deploy-configure-vault
       taskSpec:
         metadata: {}
+        params:
+          - name: vault_secrets_init
+            type: string
+          - name: push_secrets
+            type: string
+          - name: openshift_token
+            type: string
+          - name: openshift_url
+            type: string
+          - name: insecure_skip_tls_verify
+            type: string
+          - name: pattern_dir
+            type: string
+          - name: image_tag
+            type: string
         spec: null
         steps:
           - computeResources: {}
-            image: ansible/ansible-runner
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:8db3fc2b01312bde4608db60287a0480200076183c449549affb2ff3dd2c11f9'
             name: push-secrets
             script: |
               #!/bin/sh
-              ansible-navigator run /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=true" --extra-vars "vault_secrets_init=true" --vault-password-file /root/.vault_password -m stdout
+              ansible-playbook /workspace/shared-workspace/push-secrets.yaml --extra-vars "vault_push_secrets=$(params.push_secrets)" --extra-vars "vault_secrets_init=$(params.vault_secrets_init)" --extra-vars "openshift_token=$(params.openshift_token)" --extra-vars "openshift_url=$(params.openshift_url)" --extra-vars "insecure_skip_tls_verify=$(params.insecure_skip_tls_verify)" --extra-vars "pattern_dir=$(params.pattern_dir)" --extra-vars "image_tag=$(params.image_tag)" --vault-password-file /root/.vault_password
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace
