@@ -28,6 +28,7 @@ spec:
     - name: git-clone-repo
       taskRef:
         name: git-clone
+        kind: ClusterTask
       workspaces:
         - name: output
           workspace: shared-workspace
