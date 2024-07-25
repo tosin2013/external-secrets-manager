@@ -65,7 +65,14 @@ spec:
         - name: revision
           value: "main"
     - name: create-ansible-navigator-config
+      runAfter: 
+        - git-clone-repo
       taskSpec:
+        params:
+          - name: quay-username
+            type: string
+          - name: image_tag
+            type: string
         steps:
           - name: create-config
             image: alpine:latest
@@ -103,6 +110,8 @@ spec:
         - name: shared-workspace
           workspace: shared-workspace
     - name: update-inventory-file
+      runAfter: 
+        - create-ansible-navigator-config
       taskSpec:
         params:
           - name: openshift_token
@@ -160,6 +169,8 @@ spec:
         - name: shared-workspace
           workspace: shared-workspace
     - name: deploy-configure-vault
+      runAfter: 
+        - update-inventory-file
       taskSpec:
         steps:
           - name: deploy-vault
@@ -171,6 +182,8 @@ spec:
         - name: shared-workspace
           workspace: shared-workspace
     - name: push-secrets
+      runAfter: 
+        - deploy-configure-vault
       taskSpec:
         steps:
           - name: push-secrets
