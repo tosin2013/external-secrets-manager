@@ -16,6 +16,7 @@
 - name: Check if we're running inside an OCP cluster directly
   ansible.builtin.set_fact:
     running_in_ocp: "{{ lookup('env', 'KUBERNETES_SERVICE_HOST') | length > 0 | bool }}"
+  ignore_errors: true
 
 - name: Login to OpenShift
   shell: oc login --token={{ openshift_token }} --server={{ openshift_url }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}
