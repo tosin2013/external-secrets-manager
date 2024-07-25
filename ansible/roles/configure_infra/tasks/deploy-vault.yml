@@ -1,12 +1,12 @@
 # Deploy vault using a helm chart
-- name: Add HashiCorp Vault Helm repository
+- name: Ensure HashiCorp Vault Helm repository is added
   community.kubernetes.helm_repository:
     name: hashicorp
     repo_url: https://helm.releases.hashicorp.com
     state: present
   when: install_vault | bool
 
-- name: Install Helm chart from HashiCorp Vault repository
+- name: Ensure Helm chart is installed from HashiCorp Vault repository
   community.kubernetes.helm:
     name: hashicorp-vault
     chart_ref: vault
@@ -19,7 +19,7 @@
   when: install_vault | bool
 
 # Create Role for managing Route resources
-- name: Create Role for managing Route resources
+- name: Ensure Role for managing Route resources is created
   community.kubernetes.k8s:
     state: present
     definition:
@@ -35,7 +35,7 @@
   when: install_vault | bool
 
 # Create RoleBinding for the service account
-- name: Create RoleBinding for the service account
+- name: Ensure RoleBinding for the service account is created
   community.kubernetes.k8s:
     state: present
     definition:
@@ -55,20 +55,20 @@
   when: install_vault | bool
 
 # create openshift route from template 
-- name: Create openshift route from template 
+- name: Ensure openshift route is created from template 
   community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'vault-route.yaml') | from_yaml }}"
   when: install_vault | bool
 
 # sleep for 25 seconds to allow vault pod to be created
-- name: Sleep for 25 seconds to allow vault pod to be created
+- name: Ensure sufficient wait time for vault pod to be created
   pause:
-    seconds: 25
+    seconds: 30
   when: install_vault | bool
 
 # Create golang-external-secrets namespace 
-- name: Create golang-external-secrets namespace 
+- name: Ensure golang-external-secrets namespace is created
   community.kubernetes.k8s:
     state: present
     kind: Namespace
@@ -93,7 +93,7 @@
     src: external-secrets-vaules.yaml.j2
     dest: /tmp/external-secrets-vaules.yaml
 
-- name: Apply Kubernetes manifest using oc command
+- name: Ensure Kubernetes manifest is applied using oc command
   ansible.builtin.shell: |
     helm template --values=/tmp/external-secrets-vaules.yaml \
     golang-external-secrets {{ playbook_dir }}/openshift/apps/golang-external-secrets \
