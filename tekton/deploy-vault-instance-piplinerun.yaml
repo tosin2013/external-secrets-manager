@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: deploy-vault-instance-pipeline-run
+spec:
+  pipelineRef:
+    name: deploy-vault-instance-pipeline
+  params:
+    - name: openshift_token
+      value: "your-openshift-token"
+    - name: openshift_url
+      value: "https://your-openshift-url"
+    - name: insecure_skip_tls_verify
+      value: "true"
+    - name: install_vault
+      value: "true"
+    - name: push_secrets
+      value: "false"
+    - name: vault_secrets_init
+      value: "false"
+    - name: localClusterDomain
+      value: "apps.foo.cluster.com"
+    - name: hubClusterDomain
+      value: "apps.hub.example.com"
+    - name: clusterDomain
+      value: "foo.example.com"
+    - name: image_tag
+      value: "latest"
+    - name: quay-username
+      value: "your-quay-username"
+    - name: pattern_dir
+      value: "/home/your-username/external-secrets-manager"
+    - name: vault_helm
+      value: "0.28.1"
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: tekton-shared-workspace-pvc
+

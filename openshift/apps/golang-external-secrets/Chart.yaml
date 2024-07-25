@@ -9,3 +9,4 @@ dependencies:
     version: "0.9.20"
     repository: "https://charts.external-secrets.io"
     #"https://external-secrets.github.io/kubernetes-external-secrets"
+ 

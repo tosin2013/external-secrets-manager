@@ -19,7 +19,9 @@ pattern_dir: "{{ lookup('env', 'HOME') }}/external-secrets-manager"
 image_tag: 1.14.0-ubi
 
 # Vault Helm chart version
-vault_helm_version: v0.28.1 # default v0.25.0
+vault_helm: 0.28.1
+vault_helm_version: v{{ vault_helm }} # default v0.25.0
+vault_helm_route_tag: vault-{{ vault_helm }} 
 
 values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
 kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"

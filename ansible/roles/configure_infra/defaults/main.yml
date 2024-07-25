@@ -17,4 +17,6 @@ clusterDomain: foo.example.com
 image_tag: 1.14.0-ubi
 
 # Vault Helm chart version
-vault_helm_version: v0.25.0 # default v0.25.0
+vault_helm: 0.25.0
+vault_helm_version: v{{ vault_helm }} # default v0.25.0
+vault_helm_route_tag: vault-{{ vault_helm }} 
