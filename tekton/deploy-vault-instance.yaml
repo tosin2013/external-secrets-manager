@@ -35,6 +35,13 @@ spec:
     - name: clusterDomain
       type: string
       description: "Cluster domain"
+    - name: image_tag
+      type: string
+      description: "Image tag"
+      default: "1.14.0-ubi"
+    - name: quay-username
+      type: string
+      description: "Quay username"
     - name: pattern_dir
       type: string
       description: "Pattern directory"
