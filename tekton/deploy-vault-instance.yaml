@@ -74,9 +74,12 @@ spec:
       runAfter:
         - git-clone-repo
       taskSpec:
+        metadata: {}
+        spec: null
         steps:
-          - name: check-workspace
-            image: alpine:latest
+          - computeResources: {}
+            image: 'alpine:latest'
+            name: check-workspace
             script: |
               #!/bin/sh
               if [ -z "$(ls -A /workspace/shared-workspace)" ]; then
@@ -233,6 +236,19 @@ spec:
         - name: shared-workspace
           workspace: shared-workspace
     - name: deploy-configure-vault
+      params:
+        - name: openshift_token
+          value: $(params.openshift_token)
+        - name: openshift_url
+          value: $(params.openshift_url)
+        - name: insecure_skip_tls_verify
+          value: $(params.insecure_skip_tls_verify)
+        - name: install_vault
+          value: $(params.install_vault)
+        - name: pattern_dir
+          value: $(params.pattern_dir)
+        - name: image_tag
+          value: $(params.image_tag)
       runAfter:
         - update-inventory-file
       taskSpec:
@@ -262,6 +278,21 @@ spec:
         - name: shared-workspace
           workspace: shared-workspace
     - name: push-secrets
+      params:
+        - name: vault_secrets_init
+          value: $(params.vault_secrets_init)
+        - name: push_secrets
+          value: $(params.push_secrets)
+        - name: openshift_token
+          value: $(params.openshift_token)
+        - name: openshift_url
+          value: $(params.openshift_url)
+        - name: insecure_skip_tls_verify
+          value: $(params.insecure_skip_tls_verify)
+        - name: pattern_dir
+          value: $(params.pattern_dir)
+        - name: image_tag
+          value: $(params.image_tag)
       runAfter:
         - deploy-configure-vault
       taskSpec:
