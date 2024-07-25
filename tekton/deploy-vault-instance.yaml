@@ -38,7 +38,6 @@ spec:
     - name: image_tag
       type: string
       description: "Image tag"
-      default: "1.14.0-ubi"
     - name: quay-username
       type: string
       description: "Quay username"
