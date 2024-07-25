@@ -128,6 +128,13 @@ spec:
                   inventory:
                     entries:
                     - /workspace/shared-workspace/inventories/bastion
+                  roles_path: /workspace/shared-workspace/roles
+              ---
+              ansible-navigator:
+                ansible:
+                  inventory:
+                    entries:
+                    - /workspace/shared-workspace/inventories/bastion
                 execution-environment:
                   container-engine: podman
                   enabled: true
@@ -211,6 +218,7 @@ spec:
               #!/bin/sh
               mkdir -p /workspace/shared-workspace/inventories/bastion
               echo "[control]" > /workspace/shared-workspace/inventories/bastion/hosts
+              echo "roles_path=/workspace/shared-workspace/roles" >> /workspace/shared-workspace/inventories/bastion/hosts
               echo "control ansible_host=localhost ansible_user=runner" >> /workspace/shared-workspace/inventories/bastion/hosts
               cat > /workspace/shared-workspace/inventories/controller/group_vars/all.yml <<EOF
               openshift_token: $(params.openshift_token)
