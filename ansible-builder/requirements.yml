@@ -3,5 +3,5 @@ collections:
   - ansible.posix
   - containers.podman
   - community.general
-  - kubernetes.core
-  - community.kubernetes
+  #- kubernetes.core
+  #- community.kubernetes
