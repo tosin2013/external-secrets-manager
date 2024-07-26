@@ -308,7 +308,7 @@ spec:
             name: deploy-vault
             script: |
               #!/bin/sh
-              ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/install-vault.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password
+              ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/install-vault.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password -vvv
       workspaces:
         - name: shared-workspace
           workspace: shared-workspace

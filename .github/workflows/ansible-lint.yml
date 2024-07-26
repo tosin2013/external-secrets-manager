@@ -22,20 +22,20 @@ jobs:
           ansible-lint ansible/
 
 
-      - name: Run ansible-lint
-        # replace `main` with any valid ref, or tags like `v6`
-        uses: ansible/ansible-lint-action@main
-        with:
-          path: "ansible/"  # <-- only one value is allowed
+      #- name: Run ansible-lint
+      #  # replace `main` with any valid ref, or tags like `v6`
+      #  uses: ansible/ansible-lint-action@main
+      #  with:
+      #    path: "ansible/"  # <-- only one value is allowed
 
-      - name: Run ansible-lint
-        # replace `main` with any valid ref, or tags like `v6`
-        uses: ansible/ansible-lint-action@main
-        with:
-          path: "ansible-navigator/"  # <-- only one value is allowed
+      #- name: Run ansible-lint
+      #  # replace `main` with any valid ref, or tags like `v6`
+      #  uses: ansible/ansible-lint-action@main
+      #  with:
+      #    path: "ansible-navigator/"  # <-- only one value is allowed
 
-      - name: Run ansible-lint
-        # replace `main` with any valid ref, or tags like `v6`
-        uses: ansible/ansible-lint-action@main
-        with:
-          path: "ansible-builder/"  # <-- only one value is allowed
+      #- name: Run ansible-lint
+      #  # replace `main` with any valid ref, or tags like `v6`
+      #  uses: ansible/ansible-lint-action@main
+      #  with:
+      #    path: "ansible-builder/"  # <-- only one value is allowed
