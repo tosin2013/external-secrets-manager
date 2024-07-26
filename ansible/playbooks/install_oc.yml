@@ -18,7 +18,7 @@
       ansible.builtin.file:
         path: "{{ molecule_user_home_dir }}/bin"
         state: directory
-        mode: 0770
+        mode: 504
     
     - name: Download oc binary from OCP downloads svc endpoint
       ansible.builtin.get_url:
