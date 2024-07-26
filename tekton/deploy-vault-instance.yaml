@@ -115,7 +115,7 @@ spec:
                 value: $(params.quay_username)
               - name: IMAGE_TAG
                 value: $(params.image_tag)
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:0a9269e1cede79484960c13c94dafdefb1956d84ffe5fbda5cbbd824738df7de'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
             name: create-config
             script: |
               #!/bin/sh
@@ -216,7 +216,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:0a9269e1cede79484960c13c94dafdefb1956d84ffe5fbda5cbbd824738df7de'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
             name: update-inventory
             script: |
               #!/bin/sh
@@ -304,7 +304,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:0a9269e1cede79484960c13c94dafdefb1956d84ffe5fbda5cbbd824738df7de'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
             name: deploy-vault
             script: |
               #!/bin/sh
@@ -350,7 +350,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:0a9269e1cede79484960c13c94dafdefb1956d84ffe5fbda5cbbd824738df7de'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
             name: push-secrets
             script: |
               #!/bin/sh
