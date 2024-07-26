@@ -20,15 +20,13 @@ jobs:
           pip3 install ansible-lint
           ansible-galaxy collection install -r ansible-builder/requirements.yml --collections-path /usr/share/ansible/collections
           ansible-lint --version
+          
+
+
+      - name: Run ansible-lint
+        run: |
           ansible-lint ansible/
-
-
-      #- name: Run ansible-lint
-      #  # replace `main` with any valid ref, or tags like `v6`
-      #  uses: ansible/ansible-lint-action@main
-      #  with:
-      #    path: "ansible/"  # <-- only one value is allowed
-
+          
       #- name: Run ansible-lint
       #  # replace `main` with any valid ref, or tags like `v6`
       #  uses: ansible/ansible-lint-action@main
