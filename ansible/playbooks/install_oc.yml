@@ -44,4 +44,4 @@
       ansible.builtin.pip:
         name: "{{ molecule_pip_dependencies }}"
         state: present
-      when: molecule_pip_dependencies is defined
+      when: molecule_pip_dependencies is defined and molecule_pip_dependencies

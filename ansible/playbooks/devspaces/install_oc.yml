@@ -32,7 +32,7 @@
         dest: "{{ molecule_user_home_dir }}/bin/helm-v3.5.4-linux-amd64.tar.gz"
         mode: '0770'
     
-    # Extract the helm binary from the tarball and place it in { molecule_user_home_dir }}/bin/
+    # Extract the helm binary from the tarball and place it in {{ molecule_user_home_dir }}/bin/
     - name: Extract helm binary from tarball
       ansible.builtin.unarchive:
         src: "{{ molecule_user_home_dir }}/bin/helm-v3.5.4-linux-amd64.tar.gz"
@@ -62,6 +62,7 @@
 
     - name: Install ansible-galaxy collections
       ansible.builtin.command: ansible-galaxy collection install -r /projects/external-secrets-manager/ansible-builder/requirements.yml
+      changed_when: false
 
     #- name: Create symbolic link for external-secrets-manager
     #  ansible.builtin.file:
