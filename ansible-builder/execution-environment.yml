@@ -16,6 +16,9 @@ build_arg_defaults:
 dependencies:
   ansible_core:
     package_pip: ansible-core==2.14.4
+  python:
+    package_pip:
+      - vault
   ansible_runner:
     package_pip: ansible-runner
   galaxy: requirements.yml
