@@ -1,2 +1,5 @@
 # list your RPMs here
 # examples can be found on https://docs.opendev.org/opendev/bindep/latest/readme.html
+openssl
+git
+python3
