@@ -58,7 +58,7 @@
       ansible.builtin.pip:
         name: "{{ molecule_pip_dependencies }}"
         state: present
-      when: molecule_pip_dependencies is defined
+      when: molecule_pip_dependencies is defined and molecule_pip_dependencies
 
     - name: Install ansible-galaxy collections
       ansible.builtin.command: ansible-galaxy collection install -r /projects/external-secrets-manager/ansible-builder/requirements.yml
