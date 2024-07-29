@@ -20,6 +20,9 @@
 
 - name: Login to OpenShift
   shell: oc login --token={{ openshift_token }} --server={{ openshift_url }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}
+  environment:
+    HELM_HOME: /workspace/shared-workspace/.helm
+    HELM_CACHE_HOME: /workspace/shared-workspace/.helm/cache
   when:
     - not running_in_ocp
     - not kubeconfig_result.stat.exists

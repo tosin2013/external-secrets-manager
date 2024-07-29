@@ -23,6 +23,9 @@ vault_helm: 0.28.1
 vault_helm_version: v{{ vault_helm }} # default v0.25.0
 vault_helm_route_tag: vault-{{ vault_helm }} 
 
+helm_home_env: "/workspace/shared-workspace/.helm"
+helm_cache_home: "/workspace/shared-workspace/.helm/cache"
+
 values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
 kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
 kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"

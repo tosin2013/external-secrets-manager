@@ -5,11 +5,17 @@
   until: pod_count.stdout|int >= 1
   retries: 10  # Adjust as needed
   delay: 30    # Adjust as needed
+  environment:
+    HELM_HOME: "{{ helm_home_env }}"
+    HELM_CACHE_HOME: "{{ helm_cache_home }}"
   when: install_vault | bool
 
 - name: Initialize Vault
   shell: oc -n hashicorp-vault rsh hashicorp-vault-0 vault operator init
   register: vault_init_output
+  environment:
+    HELM_HOME: "{{ helm_home_env }}"
+    HELM_CACHE_HOME: "{{ helm_cache_home }}"
   when: install_vault | bool
 
 - name: Extract unseal keys and root token
@@ -29,6 +35,9 @@
 - name: Unseal Vault
   shell: "oc -n hashicorp-vault rsh hashicorp-vault-0 vault operator unseal {{ item }}"
   loop: "{{ vault_unseal_keys }}"
+  environment:
+    HELM_HOME: "{{ helm_home_env }}"
+    HELM_CACHE_HOME: "{{ helm_cache_home }}"
   when: install_vault | bool
 
 - name: Join pods to Raft cluster and unseal them
@@ -38,10 +47,16 @@
     oc -n hashicorp-vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[1] }}
     oc -n hashicorp-vault rsh {{ item }} vault operator unseal {{ vault_unseal_keys[2] }}
   loop: "{{ ['hashicorp-vault-0'] }}"  # You can add more pods here
+  environment:
+    HELM_HOME: "{{ helm_home_env }}"
+    HELM_CACHE_HOME: "{{ helm_cache_home }}"
   when: install_vault | bool
 
 - name: Login to Vault
   shell: "oc -n hashicorp-vault rsh hashicorp-vault-0 vault login {{ vault_root_token }}"
+  environment:
+    HELM_HOME: "{{ helm_home_env }}"
+    HELM_CACHE_HOME: "{{ helm_cache_home }}"
   when: install_vault | bool
 
 # Print out Root Token and prompt user to save it 
