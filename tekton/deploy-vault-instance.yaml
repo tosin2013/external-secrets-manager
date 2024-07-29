@@ -117,7 +117,7 @@ spec:
                 value: $(params.image_tag)
               - name: HELM_HOME
                 value: /workspace/shared-workspace/.helm
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:85d1ff8143f29c4ba3051da1a4bb1a4c9504f36e56469ac45d4c924471882a6e'
             name: create-config
             script: |
               #!/bin/sh
@@ -219,7 +219,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:85d1ff8143f29c4ba3051da1a4bb1a4c9504f36e56469ac45d4c924471882a6e'
             name: update-inventory
             script: |
               #!/bin/sh
@@ -310,7 +310,9 @@ spec:
             env:
               - name: HELM_HOME
                 value: /workspace/shared-workspace/.helm
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
+              - name: HELM_CACHE_HOME
+                value: /workspace/shared-workspace/.helm/cache
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:85d1ff8143f29c4ba3051da1a4bb1a4c9504f36e56469ac45d4c924471882a6e'
             name: deploy-vault
             script: |
               #!/bin/sh
@@ -360,7 +362,9 @@ spec:
             env:
               - name: HELM_HOME
                 value: /workspace/shared-workspace/.helm
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
+              - name: HELM_CACHE_HOME
+                value: /workspace/shared-workspace/.helm/cach
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:85d1ff8143f29c4ba3051da1a4bb1a4c9504f36e56469ac45d4c924471882a6e'
             name: push-secrets
             script: |
               #!/bin/sh
