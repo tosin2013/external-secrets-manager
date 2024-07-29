@@ -115,10 +115,13 @@ spec:
                 value: $(params.quay_username)
               - name: IMAGE_TAG
                 value: $(params.image_tag)
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
+              - name: HELM_HOME
+                value: /workspace/shared-workspace/.helm
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
             name: create-config
             script: |
               #!/bin/sh
+              mkdir -p /workspace/shared-workspace/.helm
               curl -OL https://gist.githubusercontent.com/tosin2013/022841d90216df8617244ab6d6aceaf8/raw/92400b9e459351d204feb67b985c08df6477d7fa/ansible_vault_setup.sh
               chmod +x ansible_vault_setup.sh
               echo "PIPELINE_PASSWORD" > /workspace/shared-workspace/.vault_password
@@ -216,7 +219,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
             name: update-inventory
             script: |
               #!/bin/sh
@@ -304,10 +307,14 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
+            env:
+              - name: HELM_HOME
+                value: /workspace/shared-workspace/.helm
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
             name: deploy-vault
             script: |
               #!/bin/sh
+              mkdir -p /workspace/shared-workspace/.helm
               ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/install-vault.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password -vvv
       workspaces:
         - name: shared-workspace
@@ -350,10 +357,14 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:e8bd1e11b47745f97fb805bcdd170cf9552dde8876f0728c203fa7ac2c251834'
+            env:
+              - name: HELM_HOME
+                value: /workspace/shared-workspace/.helm
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:01a0c2c00b682106a626a35cbbe2b6bbc8e30ab219ab470240473fd6a1fd9d0d'
             name: push-secrets
             script: |
               #!/bin/sh
+              mkdir -p /workspace/shared-workspace/.helm
               ansible-playbook -i  /workspace/shared-workspace/inventories/bastion/hosts /workspace/shared-workspace/push-secrets.yaml --extra-vars "@/workspace/shared-workspace/inventories/bastion/group_vars/all.yml" --vault-password-file  /workspace/shared-workspace/.vault_password
       workspaces:
         - name: shared-workspace

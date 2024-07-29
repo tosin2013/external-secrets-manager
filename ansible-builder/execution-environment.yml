@@ -41,5 +41,7 @@ additional_build_steps:
     RUN yum install openssl ansible-core -y
     RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar -xvzf - -C /usr/local/bin/ oc && chmod 755 /usr/local/bin/oc && ln -s /usr/local/bin/oc /usr/local/bin/kubectl
     RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
-        mkdir -p /.ansible/tmp /.config && \
-        chmod 777 /.ansible/tmp /.config
+        mkdir -p /.ansible/tmp  && \
+        chmod 777 /.ansible/tmp && \
+        mkdir /.config && \
+        chmod 777 /.config

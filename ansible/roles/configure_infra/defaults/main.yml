@@ -1,5 +1,5 @@
 ---
-install_vault: true
+configure_infra_install_vault: true
 push_secrets: false 
 
 # defaults file for configure-infra

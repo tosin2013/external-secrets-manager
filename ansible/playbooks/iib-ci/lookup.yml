@@ -10,7 +10,7 @@
   tasks:
     - name: Set url fact
       ansible.builtin.set_fact:
-        url: "{{ rh_url | format(operator + ':v') }}"
+        url: "{{ rh_url | format(operator + ':v') | truncate(160) }}"
 
     - name: Fetch URI
       ansible.builtin.uri:
