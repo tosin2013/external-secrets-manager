@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: deploy-vault-instance-pipeline-run
+  generateName: deploy-vault-instance-pipeline-run-
 spec:
   pipelineRef:
     name: deploy-vault-instance-pipeline
