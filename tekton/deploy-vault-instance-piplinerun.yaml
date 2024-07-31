@@ -28,10 +28,6 @@ spec:
       value: "apps.hub.example.com"
     - name: clusterDomain
       value: "foo.example.com"
-    - name: image_tag
-      value: "your-image-tag"  # Replace "your-image-tag" with the desired value
-    - name: quay_username
-      value: "your-quay-username"  # Replace "your-quay-username" with the desired value
     - name: pattern_dir
       value: "/home/your-username/external-secrets-manager"
     - name: vault_helm
