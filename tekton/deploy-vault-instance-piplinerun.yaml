@@ -19,7 +19,7 @@ spec:
     - name: install_vault
       value: "true"
     - name: push_secrets
-      value: "false"
+      value: "{{ params.install_vault == 'true' ? 'true' : 'false' }}"  # Automatically set push_secrets to false if install_vault is false
     - name: vault_secrets_init
       value: "false"
     - name: localClusterDomain

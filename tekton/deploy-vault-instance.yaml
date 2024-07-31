@@ -117,7 +117,7 @@ spec:
                 value: $(params.image_tag)
               - name: HELM_HOME
                 value: /workspace/shared-workspace/.helm
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:9f2354ec8e36d56a7eafa258f5918074c7c496201a4d94e63b16bcedd5848694'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:76d4f3c55fc361940a2ceae97e8968f0355038b83482e29ef27f500b5cb7bdcb'
             name: create-config
             script: |
               #!/bin/sh
@@ -219,7 +219,7 @@ spec:
         spec: null
         steps:
           - computeResources: {}
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:9f2354ec8e36d56a7eafa258f5918074c7c496201a4d94e63b16bcedd5848694'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:76d4f3c55fc361940a2ceae97e8968f0355038b83482e29ef27f500b5cb7bdcb'
             name: update-inventory
             script: |
               #!/bin/sh
@@ -315,7 +315,7 @@ spec:
                 value: /workspace/shared-workspace/.helm
               - name: HELM_CACHE_HOME
                 value: /workspace/shared-workspace/.helm/cache
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:9f2354ec8e36d56a7eafa258f5918074c7c496201a4d94e63b16bcedd5848694'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:76d4f3c55fc361940a2ceae97e8968f0355038b83482e29ef27f500b5cb7bdcb'
             name: deploy-vault
             script: |
               #!/bin/sh
@@ -367,7 +367,7 @@ spec:
                 value: /workspace/shared-workspace/.helm
               - name: HELM_CACHE_HOME
                 value: /workspace/shared-workspace/.helm/cach
-            image: 'quay.io/takinosh/external-secrets-manager@sha256:9f2354ec8e36d56a7eafa258f5918074c7c496201a4d94e63b16bcedd5848694'
+            image: 'quay.io/takinosh/external-secrets-manager@sha256:76d4f3c55fc361940a2ceae97e8968f0355038b83482e29ef27f500b5cb7bdcb'
             name: push-secrets
             script: |
               #!/bin/sh
