@@ -2,5 +2,5 @@
 collections:
   - ansible.posix
   - containers.podman
-  - kubernetes.core:1.2.1  # Specify a compatible version
+  - kubernetes.core
   - community.kubernetes
