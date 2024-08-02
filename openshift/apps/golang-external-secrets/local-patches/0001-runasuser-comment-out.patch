@@ -4,7 +4,7 @@
        - ALL
    readOnlyRootFilesystem: true
    runAsNonRoot: true
--  runAsUser: 1000
+-  runAsUser: 1000890002
 -  seccompProfile:
 -    type: RuntimeDefault
 +  # runAsUser: 1000
@@ -19,7 +19,7 @@
          - ALL
      readOnlyRootFilesystem: true
      runAsNonRoot: true
--    runAsUser: 1000
+-    runAsUser: 1000890002
 -    seccompProfile:
 -      type: RuntimeDefault
 +    # runAsUser: 1000
@@ -34,7 +34,7 @@
          - ALL
      readOnlyRootFilesystem: true
      runAsNonRoot: true
--    runAsUser: 1000
+-    runAsUser: 1000890002
 -    seccompProfile:
 -      type: RuntimeDefault
 +    # runAsUser: 1000
