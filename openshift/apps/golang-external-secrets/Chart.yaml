@@ -1,12 +1,8 @@
 apiVersion: v2
-description: A Helm chart to configure the golang-based external-secrets
+description: An Operator for managing external secrets in Kubernetes
 keywords:
-- pattern
-name: golang-external-secrets
+- operator
+name: golang-external-secrets-operator
 version: 0.0.1
-dependencies:
-  - name: external-secrets
-    version: "0.9.20"
-    repository: "https://charts.external-secrets.io"
     #"https://external-secrets.github.io/kubernetes-external-secrets"
  

@@ -1,6 +1,9 @@
 ---
-mountPath: "hub"
-mountRole: "hub-role"
+operator:
+  image:
+    repository: ghcr.io/external-secrets/external-secrets-operator
+    pullPolicy: IfNotPresent
+    tag: "v0.4.4"
 
 global:
   hubClusterDomain: hub.example.com
@@ -8,13 +11,3 @@ global:
 
 clusterGroup:
   isHubCluster: true
-
-external-secrets:
-  image:
-    tag: v0.8.5-ubi
-  webhook:
-    image:
-      tag: v0.8.5-ubi
-  certController:
-    image:
-      tag: v0.8.5-ubi
