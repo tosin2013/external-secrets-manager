@@ -9,3 +9,6 @@
 
 - name: Initialize and Unseal HashiCorp Vault
   import_tasks: vault-init.yaml
+
+- name: Deploy External Secrets Operator using Kustomize
+  import_tasks: deploy-external-secrets-operator.yml
