@@ -1,8 +1,0 @@
-apiVersion: v2
-description: An Operator for managing external secrets in Kubernetes
-keywords:
-- operator
-name: golang-external-secrets-operator
-version: 0.0.1
-    #"https://external-secrets.github.io/kubernetes-external-secrets"
- 
