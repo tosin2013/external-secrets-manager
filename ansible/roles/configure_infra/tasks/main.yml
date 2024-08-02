@@ -12,3 +12,4 @@
 
 - name: Deploy External Secrets Operator using Kustomize
   import_tasks: deploy-external-secrets-operator.yml
+  when: install_vault | bool
