@@ -3,6 +3,7 @@
 ACTION=$1
 NAMESPACE1="hashicorp-vault"
 NAMESPACE2="golang-external-secrets"
+OPERATOR_NAMESPACE="openshift-operators"
 
 if [ "$ACTION" == "create" ]; then
     oc new-project $NAMESPACE1
@@ -121,180 +122,54 @@ EOF
     sleep 15
     oc create -f tekton/deploy-vault-instance-piplinerun-testme.yaml -n $NAMESPACE1
 
-    # Namespace 2: golang-external-secrets
-
-    # Create ClusterRole for managing resources in NAMESPACE2
-    cat >namespace-manager-clusterrole.yaml<<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: namespace-manager
-rules:
-- apiGroups: [""]
-  resources: ["namespaces", "serviceaccounts", "secrets", "endpoints", "events", "configmaps", "services"]
-  verbs: ["get", "create", "list", "watch", "delete", "patch", "update"]
-- apiGroups: ["rbac.authorization.k8s.io"]
-  resources: ["roles", "rolebindings"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-- apiGroups: ["apps"]
-  resources: ["deployments"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-- apiGroups: ["admissionregistration.k8s.io"]
-  resources: ["validatingwebhookconfigurations"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-EOF
-    oc apply -f namespace-manager-clusterrole.yaml
-    rm namespace-manager-clusterrole.yaml
-
-    # Create ClusterRoleBinding for the namespace manager ClusterRole in NAMESPACE2
-    cat >namespace-manager-clusterrolebinding.yaml<<EOF
+    # Grant necessary permissions to the pipeline service account for the external-secrets-operator subscription in the openshift-operators namespace
+    cat >external-secrets-operator-permissions.yaml<<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: namespace-manager-binding
+  name: external-secrets-operator-permissions
 subjects:
 - kind: ServiceAccount
   name: pipeline
   namespace: $NAMESPACE1
 roleRef:
   kind: ClusterRole
-  name: namespace-manager
+  name: view
   apiGroup: rbac.authorization.k8s.io
 EOF
-    oc apply -f namespace-manager-clusterrolebinding.yaml
-    rm namespace-manager-clusterrolebinding.yaml
+    oc apply -f external-secrets-operator-permissions.yaml
+    rm external-secrets-operator-permissions.yaml
 
-    # Create ClusterRole for external-secrets in NAMESPACE2
-    cat >external-secrets-clusterrole.yaml<<EOF
+    # Grant patch permissions to the pipeline service account for the subscriptions resource in the openshift-operators namespace
+    cat >patch-subscriptions-role.yaml<<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: external-secrets-role
+  name: patch-subscriptions-role
 rules:
-- apiGroups: [""]
-  resources: ["namespaces", "serviceaccounts", "secrets", "endpoints", "events", "configmaps", "services"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-- apiGroups: ["admissionregistration.k8s.io"]
-  resources: ["validatingwebhookconfigurations"]
-  verbs: ["get", "list", "watch", "update", "patch", "create"]
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "watch", "update", "patch"]
-- apiGroups: ["coordination.k8s.io"]
-  resources: ["leases"]
-  verbs: ["get", "create", "update", "patch"]
-- apiGroups: ["external-secrets.io"]
-  resources: ["*"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
-- apiGroups: ["generators.external-secrets.io"]
-  resources: ["*"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
+- apiGroups: ["operators.coreos.com"]
+  resources: ["subscriptions"]
+  verbs: ["patch"]
 EOF
-    oc apply -f external-secrets-clusterrole.yaml
-    rm external-secrets-clusterrole.yaml
+    oc apply -f patch-subscriptions-role.yaml
+    rm patch-subscriptions-role.yaml
 
-    # Create ClusterRoleBinding for external-secrets ClusterRole in NAMESPACE2
-    cat >external-secrets-clusterrolebinding.yaml<<EOF
+    cat >patch-subscriptions-rolebinding.yaml<<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: external-secrets-binding
+  name: patch-subscriptions-rolebinding
 subjects:
 - kind: ServiceAccount
   name: pipeline
   namespace: $NAMESPACE1
 roleRef:
   kind: ClusterRole
-  name: external-secrets-role
+  name: patch-subscriptions-role
   apiGroup: rbac.authorization.k8s.io
 EOF
-    oc apply -f external-secrets-clusterrolebinding.yaml
-    rm external-secrets-clusterrolebinding.yaml
-
-    # Create custom SecurityContextConstraints for NAMESPACE2
-    cat >custom-scc.yaml<<EOF
-apiVersion: security.openshift.io/v1
-kind: SecurityContextConstraints
-metadata:
-  name: custom-scc
-allowPrivilegedContainer: false
-allowHostNetwork: false
-allowHostPorts: false
-allowHostPID: false
-allowHostIPC: false
-allowHostDirVolumePlugin: false
-readOnlyRootFilesystem: false
-requiredDropCapabilities:
-- KILL
-- MKNOD
-- SETUID
-- SETGID
-volumes:
-- configMap
-- downwardAPI
-- emptyDir
-- persistentVolumeClaim
-- projected
-- secret
-- nfs
-- hostPath
-runAsUser:
-  type: MustRunAsRange
-  uidRangeMin: 1001370000
-  uidRangeMax: 1001379999
-seLinuxContext:
-  type: MustRunAs
-fsGroup:
-  type: MustRunAs
-  ranges:
-  - min: 1001370000
-    max: 1001379999
-supplementalGroups:
-  type: MustRunAs
-  ranges:
-  - min: 1001370000
-    max: 1001379999
-EOF
-    oc apply -f custom-scc.yaml
-    rm custom-scc.yaml
-
-    # Assign the custom SCC to the pipeline service account in NAMESPACE2
-    oc adm policy add-scc-to-user custom-scc -z pipeline -n $NAMESPACE2
-
-    # Additional Role for serviceaccounts/token creation in NAMESPACE2
-    cat >serviceaccount-token-creator-role.yaml<<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: serviceaccount-token-creator-role
-rules:
-- apiGroups: [""]
-  resources: ["serviceaccounts/token"]
-  verbs: ["create"]
-EOF
-    oc apply -f serviceaccount-token-creator-role.yaml
-    rm serviceaccount-token-creator-role.yaml
-
-    # Bind the role to the pipeline service account in NAMESPACE2
-    cat >serviceaccount-token-creator-rolebinding.yaml<<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: serviceaccount-token-creator-rolebinding
-subjects:
-- kind: ServiceAccount
-  name: pipeline
-  namespace: $NAMESPACE1
-roleRef:
-  kind: ClusterRole
-  name: serviceaccount-token-creator-role
-  apiGroup: rbac.authorization.k8s.io
-EOF
-    oc apply -f serviceaccount-token-creator-rolebinding.yaml
-    rm serviceaccount-token-creator-rolebinding.yaml
+    oc apply -f patch-subscriptions-rolebinding.yaml
+    rm patch-subscriptions-rolebinding.yaml
 
 elif [ "$ACTION" == "delete" ]; then
     oc delete project $NAMESPACE1
@@ -305,13 +180,9 @@ elif [ "$ACTION" == "delete" ]; then
     oc delete clusterrolebinding create-cluster-resources-clusterrolebinding
     oc delete clusterrole namespace-access-role
     oc delete clusterrolebinding namespace-access-rolebinding
-    oc delete clusterrole namespace-manager
-    oc delete clusterrolebinding namespace-manager-binding
-    oc delete clusterrole external-secrets-role
-    oc delete clusterrolebinding external-secrets-binding
-    oc delete scc custom-scc
-    oc delete clusterrole serviceaccount-token-creator-role
-    oc delete clusterrolebinding serviceaccount-token-creator-rolebinding
+    oc delete clusterrolebinding external-secrets-operator-permissions
+    oc delete clusterrole patch-subscriptions-role
+    oc delete clusterrolebinding patch-subscriptions-rolebinding
 else
     echo "Usage: $0 [create|delete]"
     exit 1
