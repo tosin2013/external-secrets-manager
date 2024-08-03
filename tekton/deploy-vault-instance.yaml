@@ -29,6 +29,10 @@ spec:
       description: Install Vault
       name: install_vault
       type: string
+    - default: "/workspace/shared-workspace/vars/values-secret.yaml"
+      description: Path to values-secret.yaml
+      name: values_secret_path
+      type: string
     - default: 'false'
       description: Push secrets
       name: push_secrets
@@ -216,6 +220,8 @@ spec:
             type: string
           - name: vault_helm
             type: string
+          - name: values_secret_path
+            type: string
         spec: null
         steps:
           - computeResources: {}
@@ -251,7 +257,7 @@ spec:
               helm_home_env: "/workspace/shared-workspace/.helm"
               helm_cache_home: "/workspace/shared-workspace/.helm/cache"
 
-              values_secret: "{{ lookup('env', 'HOME') }}/values-secret.yaml"
+              values_secret: "$(params.values_secret_path)"
               kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
               kubeconfig_backup: "{{ lookup('env', 'HOME') }}/.kube/config"
               vault_ns: "hashicorp-vault"

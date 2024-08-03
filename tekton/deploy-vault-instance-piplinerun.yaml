@@ -20,6 +20,8 @@ spec:
       value: "true"
     - name: push_secrets
       value: "{{ params.install_vault == 'true' ? 'true' : 'false' }}"  # Automatically set push_secrets to false if install_vault is false
+    - name: values_secret_path
+      value: "/workspace/shared-workspace/vars/values-secret.yaml"
     - name: vault_secrets_init
       value: "false"
     - name: localClusterDomain
