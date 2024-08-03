@@ -163,13 +163,16 @@ def run(module):
         elif isinstance(syaml, str):
             module.fail_json(f"Could not parse {values_secrets} file as yaml")
     elif values_secrets_plaintext != "":
-        syaml = yaml.safe_load(values_secrets_plaintext)
+        try:
+            syaml = yaml.safe_load(values_secrets_plaintext)
+        except yaml.YAMLError as e:
+            module.fail_json(f"Could not parse values_secrets_plaintext as yaml: {e}")
         if syaml is None:
             syaml = {}
         elif isinstance(syaml, str):
             module.fail_json("Could not parse values_secrets_plaintext as yaml")
     else:
-        module.fail_json("Both values_secrets and values_secrets_plaintext are unset")
+        module.fail_json("Neither values_secrets nor values_secrets_plaintext are set")
 
     version = get_version(syaml)
     if version == "2.0":
